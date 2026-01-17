@@ -1,0 +1,42 @@
+[package]
+name = "mu-kernel"
+version = "0.1.0"
+edition = "2021"
+authors = ["Quigles1337 <adz@alphx.io>"]
+description = "μKernel: Capability-based microkernel for μOS"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Quigles1337/ADZ-OS"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+# Bare metal primitives
+spin = "0.9"
+bitflags = "2.4"
+static_assertions = "1.1"
+
+# Logging
+log = "0.4"
+
+# x86_64 specific
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86_64 = "0.15"
+uart_16550 = "0.3"
+pic8259 = "0.11"
+pc-keyboard = "0.7"
+
+[dependencies.lazy_static]
+version = "1.4"
+features = ["spin_no_std"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+opt-level = "z"
+
+[package.metadata.bootloader]
+physical-memory-offset = "0xFFFF800000000000"

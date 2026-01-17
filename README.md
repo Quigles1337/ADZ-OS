@@ -9,7 +9,7 @@ A custom microkernel operating system inspired by TempleOS, Tor, and novel μ-cr
 | **Phase 1** | μ-Cryptography Foundation | ✅ Complete |
 | **Phase 2** | ChainMesh Blockchain | ✅ Complete |
 | **Phase 3** | MuonNet Privacy Layer | ✅ Complete |
-| **Phase 4** | μKernel | 📋 Planned |
+| **Phase 4** | μKernel | ✅ Complete |
 
 ## Core Pillars
 
@@ -90,7 +90,29 @@ muos/
 │       ├── client.rs          # High-level client API
 │       ├── config.rs          # Configuration management
 │       └── error.rs           # Error types
-├── kernel/                    # Microkernel 📋
+├── kernel/                    # Microkernel ✅
+│   ├── Cargo.toml             # Bare-metal Rust configuration
+│   ├── .cargo/config.toml     # x86_64-unknown-none target
+│   ├── linker.ld              # Kernel linker script
+│   └── src/
+│       ├── lib.rs             # Entry point, error types
+│       ├── boot/              # Boot info, BSS init
+│       ├── mm/                # Memory management
+│       │   ├── frame.rs       # Physical frame allocator
+│       │   ├── heap.rs        # Kernel heap allocator
+│       │   ├── page.rs        # 4-level page tables
+│       │   └── virt.rs        # Address space management
+│       ├── caps/              # Capability-based security
+│       ├── ipc/               # Message-passing IPC
+│       ├── sys/               # System services
+│       │   ├── scheduler.rs   # 256-priority scheduler
+│       │   ├── process.rs     # Process management
+│       │   ├── thread.rs      # Thread & context switch
+│       │   └── syscall.rs     # Syscall interface
+│       └── drivers/           # Device drivers
+│           ├── serial.rs      # UART 16550 + logging
+│           ├── interrupts.rs  # IDT, PIC, exceptions
+│           └── timer.rs       # PIT timer
 └── docs/
     ├── ARCHITECTURE.md        # Visual architecture diagrams
     ├── SPEC.md                # Formal specification
@@ -248,13 +270,40 @@ cd muonnet && cargo build --release
 cargo test  # 78 tests passing
 ```
 
-### μKernel (Planned)
+### μKernel (Complete)
 
-Microkernel architecture:
-- Capability-based security
-- Message-passing IPC
-- < 50K lines target
-- Formal verification roadmap
+Capability-based microkernel for x86_64:
+
+**Core Architecture:**
+- **Capability-based security** - Unforgeable tokens for all resource access (seL4-inspired)
+- **Message-passing IPC** - Synchronous send/recv with capability transfer
+- **256-priority scheduler** - Preemptive round-robin within priority levels
+- **4-level page tables** - Full virtual address space management
+- **Process isolation** - Separate address spaces per process
+
+**Memory Management:**
+- **Physical frame allocator** - Bitmap-based with O(1) allocation hints
+- **Virtual address spaces** - Per-process page table hierarchies
+- **Kernel heap** - Bump allocator for early boot
+
+**Drivers:**
+- **Serial (UART 16550)** - Debug output via COM1 with `log` crate integration
+- **Interrupts (PIC 8259)** - IDT setup, exception handlers, hardware IRQs
+- **Timer (PIT 8254)** - 100Hz system tick for preemption
+
+**Syscall Interface:**
+- IPC: Send, Recv, Call, Reply, Wait, Signal
+- Capabilities: Create, Delete, Copy, Mint, Revoke
+- Memory: Map, Unmap, Protect, Alloc, Free
+- Threads: Create, Suspend, Resume, Yield, Exit
+- Process: Create, Kill, Wait
+
+**Build:**
+```bash
+cd kernel && cargo +nightly build
+```
+
+**Target:** x86_64-unknown-none (bare metal, no OS dependencies)
 
 ## Security Warning
 
@@ -278,9 +327,10 @@ Do NOT use for real-world security applications.
 | M6 | ChainMesh CLI & node | ✅ Complete |
 | M7 | MuonNet privacy layer | ✅ Complete |
 | M8 | MuonNet hidden services | ✅ Complete |
-| M9 | μKernel boots | 📋 Planned |
-| M10 | Self-hosting | 📋 Planned |
-| M11 | Public alpha | 📋 Planned |
+| M9 | μKernel core | ✅ Complete |
+| M10 | μKernel bootloader | 📋 Planned |
+| M11 | Self-hosting | 📋 Planned |
+| M12 | Public alpha | 📋 Planned |
 
 ## Documentation
 
