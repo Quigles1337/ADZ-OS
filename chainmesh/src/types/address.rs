@@ -224,6 +224,37 @@ pub enum AddressError {
     InvalidHex,
 }
 
+impl Address {
+    /// Parse address from string (auto-detects format)
+    /// Supports: Base58 (mu1...), hex (0x...), and raw hex
+    pub fn from_str(s: &str) -> Result<Self, AddressError> {
+        // Try Base58 first (starts with version byte prefix)
+        if s.starts_with("mu") || s.starts_with("1") || s.starts_with("2") {
+            return Self::from_base58(s);
+        }
+
+        // Try hex (with or without 0x prefix)
+        let hex_str = s.strip_prefix("0x").unwrap_or(s);
+        Self::from_hex(hex_str)
+    }
+
+    /// Create address from raw bytes
+    pub fn from_bytes(bytes: [u8; ADDRESS_LENGTH]) -> Self {
+        Self {
+            address_type: AddressType::User,
+            bytes,
+        }
+    }
+}
+
+impl std::str::FromStr for Address {
+    type Err = AddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Address::from_str(s)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

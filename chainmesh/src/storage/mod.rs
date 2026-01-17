@@ -17,7 +17,7 @@ use crate::types::{Address, BlockHash};
 use std::sync::Arc;
 
 // Re-exports
-pub use kv::{KeyValueStore, MemoryKV, BatchWrite, WriteBatch};
+pub use kv::{KeyValueStore, MemoryKV, BatchWrite, WriteBatch, OverlayKV};
 pub use trie::{MerkleTrie, TrieNode, TrieProof, StateRoot};
 pub use state::{StateDB, AccountState, StorageValue};
 pub use cache::{StateCache, CacheConfig};

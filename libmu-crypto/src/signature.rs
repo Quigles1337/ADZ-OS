@@ -378,6 +378,12 @@ impl MuKeyPair {
     pub fn verify(&self, message: &[u8], signature: &MuSignature) -> Result<(), SignatureError> {
         self.public.verify(message, signature)
     }
+
+    /// Get the private key bytes
+    /// WARNING: Handle with care - this exposes the secret key material
+    pub fn private_key_bytes(&self) -> [u8; 32] {
+        self.private.key
+    }
 }
 
 /// Batch signature verification

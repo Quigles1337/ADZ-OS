@@ -23,8 +23,8 @@ pub mod consensus;
 pub mod contracts;
 pub mod p2p;
 pub mod storage;
+pub mod node;
 // pub mod crypto;
-// pub mod node;
 
 pub use types::*;
 
@@ -128,4 +128,19 @@ pub enum ChainError {
 
     #[error("Network error: {0}")]
     Network(String),
+
+    #[error("Node error: {0}")]
+    Node(String),
+}
+
+impl From<storage::StorageError> for ChainError {
+    fn from(e: storage::StorageError) -> Self {
+        ChainError::Storage(e.to_string())
+    }
+}
+
+impl From<node::NodeError> for ChainError {
+    fn from(e: node::NodeError) -> Self {
+        ChainError::Node(e.to_string())
+    }
 }

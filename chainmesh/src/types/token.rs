@@ -40,6 +40,11 @@ impl MuCoin {
     /// One MUC
     pub const ONE_MUC: Self = Self(MUONS_PER_MUC);
 
+    /// Create zero amount
+    pub const fn zero() -> Self {
+        Self::ZERO
+    }
+
     /// Create from muons (smallest unit)
     pub const fn from_muons(muons: u64) -> Self {
         Self(muons)

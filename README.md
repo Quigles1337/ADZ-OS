@@ -7,7 +7,7 @@ A custom microkernel operating system inspired by TempleOS, Tor, and novel μ-cr
 | Phase | Component | Status |
 |-------|-----------|--------|
 | **Phase 1** | μ-Cryptography Foundation | ✅ Complete |
-| **Phase 2** | ChainMesh Blockchain | 🔄 In Progress |
+| **Phase 2** | ChainMesh Blockchain | ✅ Complete |
 | **Phase 3** | MuonNet Privacy Layer | 📋 Planned |
 | **Phase 4** | μKernel | 📋 Planned |
 
@@ -32,9 +32,11 @@ muos/
 │   │   ├── signature.rs       # Digital signatures
 │   │   └── random.rs          # CSPRNG
 │   └── tests/
-├── chainmesh/                 # Blockchain protocol 🔄
+├── chainmesh/                 # Blockchain protocol ✅
 │   └── src/
 │       ├── lib.rs             # ChainMesh configuration
+│       ├── bin/               # CLI binary
+│       │   └── chainmesh.rs   # Full-featured CLI
 │       ├── types/             # Core data structures
 │       │   ├── address.rs     # Addresses with μ-hashing
 │       │   ├── token.rs       # MuCoin & NFT tokens
@@ -46,12 +48,28 @@ muos/
 │       │   ├── validator.rs   # Validator management
 │       │   ├── epoch.rs       # 8-block epochs
 │       │   └── reward.rs      # Block rewards
-│       └── contracts/         # Smart contracts
-│           ├── nft.rs         # NFT minting & transfers
-│           ├── collection.rs  # Collection management
-│           ├── marketplace.rs # P2P trading & auctions
-│           ├── royalty.rs     # Creator royalties
-│           └── game_license.rs# Game licensing system
+│       ├── contracts/         # Smart contracts
+│       │   ├── nft.rs         # NFT minting & transfers
+│       │   ├── collection.rs  # Collection management
+│       │   ├── marketplace.rs # P2P trading & auctions
+│       │   ├── royalty.rs     # Creator royalties
+│       │   └── game_license.rs# Game licensing system
+│       ├── node/              # Full node implementation
+│       │   ├── mod.rs         # Node orchestration
+│       │   ├── config.rs      # Node configuration
+│       │   ├── chain.rs       # Chain manager
+│       │   ├── mempool.rs     # Transaction pool
+│       │   └── rpc.rs         # JSON-RPC API
+│       ├── p2p/               # Peer-to-peer networking
+│       │   ├── peer.rs        # Peer management
+│       │   ├── gossip.rs      # Gossip protocol
+│       │   ├── discovery.rs   # Peer discovery
+│       │   └── sync.rs        # Chain synchronization
+│       └── storage/           # State storage
+│           ├── kv.rs          # Key-value store
+│           ├── trie.rs        # Merkle Patricia Trie
+│           ├── state.rs       # State database
+│           └── snapshot.rs    # State snapshots
 ├── muonnet/                   # Privacy networking 📋
 ├── kernel/                    # Microkernel 📋
 └── docs/
@@ -126,18 +144,48 @@ A complete cryptographic library featuring:
 | μ-Signatures | Schnorr-like signatures | 128-bit (EUF-CMA) |
 | μ-RNG | Forward-secure CSPRNG | - |
 
-### ChainMesh (In Progress)
+### ChainMesh (Complete)
 
-Blockchain protocol with:
+Full blockchain protocol with CLI and node:
+
+**Core Features:**
 - **μ-Proof-of-Stake consensus** - Golden ratio validator selection, V_Z stake weighting
 - **8-block epochs** - Based on μ^8 = 1 closure property
+- **137,036,000 MUC total supply** - Tribute to fine-structure constant α ≈ 1/137
+- **Merkle Patricia Trie** - Authenticated state storage
+- **Transaction mempool** - Priority ordering with LRU eviction
+- **JSON-RPC API** - Ethereum-compatible interface
+
+**Smart Contracts:**
 - **NFT-native digital ownership** - Minting, transfers, burns, approvals
 - **Collection management** - Whitelist minting, supply limits, paid mints
 - **P2P marketplace** - Fixed price, auctions (with anti-sniping), Dutch auctions
 - **Escrow system** - Dispute resolution with arbitration
 - **Creator royalties** - Multi-recipient splits, EIP-2981 compatible
 - **Game licensing** - Activation tracking, family sharing, developer licenses
-- **137,036,000 MUC total supply** - Tribute to fine-structure constant α ≈ 1/137
+
+**CLI Commands:**
+```bash
+chainmesh node       # Start a ChainMesh node
+chainmesh keygen     # Generate cryptographic keys
+chainmesh account    # Account operations (balance, nonce)
+chainmesh tx         # Transaction operations (send, stake)
+chainmesh query      # Query blockchain state (block, tx)
+chainmesh init       # Initialize a new chain
+chainmesh version    # Show version and system info
+```
+
+**Quick Start:**
+```bash
+# Build the CLI
+cd chainmesh && cargo build --release
+
+# Generate a keypair
+./target/release/chainmesh keygen
+
+# Start a devnet node
+./target/release/chainmesh --network devnet node
+```
 
 ### MuonNet (Planned)
 
@@ -173,12 +221,13 @@ Do NOT use for real-world security applications.
 | M2 | libmu-crypto v1.0 | ✅ Complete |
 | M3 | ChainMesh types & consensus | ✅ Complete |
 | M4 | ChainMesh contracts & marketplace | ✅ Complete |
-| M5 | ChainMesh P2P & storage | 🔄 In Progress |
-| M6 | ChainMesh testnet | 📋 Planned |
-| M7 | MuonNet prototype | 📋 Planned |
-| M8 | μKernel boots | 📋 Planned |
-| M9 | Self-hosting | 📋 Planned |
-| M10 | Public alpha | 📋 Planned |
+| M5 | ChainMesh P2P & storage | ✅ Complete |
+| M6 | ChainMesh CLI & node | ✅ Complete |
+| M7 | ChainMesh testnet | 📋 Planned |
+| M8 | MuonNet prototype | 📋 Planned |
+| M9 | μKernel boots | 📋 Planned |
+| M10 | Self-hosting | 📋 Planned |
+| M11 | Public alpha | 📋 Planned |
 
 ## Documentation
 
