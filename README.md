@@ -1,4 +1,4 @@
-# μOS: Privacy-First Gaming OS
+# μOS: Privacy-First Gaming OS *(EXPERIMENTAL OPERATING SYSTEM)*
 
 A custom microkernel operating system inspired by TempleOS, Tor, and novel μ-cryptography, designed for gamers and open-source developers with built-in blockchain marketplace for digital ownership.
 
