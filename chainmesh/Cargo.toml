@@ -1,0 +1,76 @@
+[package]
+name = "chainmesh"
+version = "0.1.0"
+edition = "2021"
+authors = ["μOS Project"]
+description = "ChainMesh blockchain protocol for μOS - μ-Proof-of-Stake consensus with NFT-native ownership"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/muos-project/chainmesh"
+keywords = ["blockchain", "consensus", "nft", "proof-of-stake", "muos"]
+categories = ["cryptography", "network-programming"]
+
+[features]
+default = ["std"]
+std = []
+testnet = []
+mainnet = []
+
+[dependencies]
+# μ-Cryptography from the same workspace
+libmu-crypto = { path = "../libmu-crypto" }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Networking
+tokio-util = { version = "0.7", features = ["codec"] }
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Hex encoding
+hex = "0.4"
+
+# Base58 for addresses
+bs58 = "0.5"
+
+# Serde support for large arrays
+serde_with = "3.9"
+
+# Database (optional, for persistence)
+sled = { version = "0.34", optional = true }
+
+# Random
+rand = "0.8"
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = "0.5"
+tempfile = "3.10"
+
+# Binary will be added later when node is implemented
+# [[bin]]
+# name = "chainmesh-node"
+# path = "src/node/main.rs"
+
+# Benchmarks will be added later
+# [[bench]]
+# name = "consensus_bench"
+# harness = false
+
+[profile.release]
+opt-level = 3
+lto = true

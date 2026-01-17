@@ -1,0 +1,57 @@
+[package]
+name = "libmu-crypto"
+version = "0.1.0"
+edition = "2021"
+authors = ["μOS Project"]
+description = "Novel μ-cryptography library based on balance primitive geometry"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/muos-project/libmu-crypto"
+keywords = ["cryptography", "cipher", "hash", "signatures", "muos"]
+categories = ["cryptography", "no-std"]
+
+[features]
+default = ["std"]
+std = []
+# Enable for kernel integration (no_std)
+kernel = []
+# Enable experimental features
+experimental = []
+
+[dependencies]
+# Core numeric types for arbitrary precision
+num-complex = "0.4"
+num-traits = "0.2"
+
+# Constant-time operations for side-channel resistance
+subtle = "2.5"
+
+# Secure memory handling
+zeroize = { version = "1.7", features = ["derive"] }
+
+# Random number generation
+rand = { version = "0.8", optional = true }
+rand_core = "0.6"
+getrandom = { version = "0.2", features = ["std"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[dev-dependencies]
+# Testing and benchmarking
+criterion = "0.5"
+hex = "0.4"
+rand = "0.8"
+proptest = "1.4"
+
+[[bench]]
+name = "crypto_bench"
+harness = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
