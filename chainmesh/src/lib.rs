@@ -22,8 +22,8 @@ pub mod types;
 pub mod consensus;
 pub mod contracts;
 pub mod p2p;
+pub mod storage;
 // pub mod crypto;
-// pub mod storage;
 // pub mod node;
 
 pub use types::*;
