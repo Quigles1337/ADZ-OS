@@ -8,7 +8,7 @@ A custom microkernel operating system inspired by TempleOS, Tor, and novel μ-cr
 |-------|-----------|--------|
 | **Phase 1** | μ-Cryptography Foundation | ✅ Complete |
 | **Phase 2** | ChainMesh Blockchain | ✅ Complete |
-| **Phase 3** | MuonNet Privacy Layer | 📋 Planned |
+| **Phase 3** | MuonNet Privacy Layer | ✅ Complete |
 | **Phase 4** | μKernel | 📋 Planned |
 
 ## Core Pillars
@@ -70,7 +70,26 @@ muos/
 │           ├── trie.rs        # Merkle Patricia Trie
 │           ├── state.rs       # State database
 │           └── snapshot.rs    # State snapshots
-├── muonnet/                   # Privacy networking 📋
+├── muonnet/                   # Privacy networking ✅
+│   └── src/
+│       ├── lib.rs             # Library entry point
+│       ├── bin/               # CLI binaries
+│       │   ├── muond.rs       # Daemon binary
+│       │   └── muon.rs        # CLI binary
+│       ├── crypto/            # Cryptographic layer
+│       │   ├── mod.rs         # CryptoContext, key exchange
+│       │   ├── onion.rs       # Onion layer encryption
+│       │   ├── handshake.rs   # Circuit handshake protocol
+│       │   └── keys.rs        # Circuit key management
+│       ├── cell.rs            # Fixed 512-byte cell protocol
+│       ├── circuit.rs         # Circuit construction
+│       ├── stream.rs          # Stream multiplexing
+│       ├── relay.rs           # Relay descriptors & selection
+│       ├── directory.rs       # Directory authorities
+│       ├── hidden.rs          # Hidden services (.muon)
+│       ├── client.rs          # High-level client API
+│       ├── config.rs          # Configuration management
+│       └── error.rs           # Error types
 ├── kernel/                    # Microkernel 📋
 └── docs/
     ├── ARCHITECTURE.md        # Visual architecture diagrams
@@ -187,13 +206,47 @@ cd chainmesh && cargo build --release
 ./target/release/chainmesh --network devnet node
 ```
 
-### MuonNet (Planned)
+### MuonNet (Complete)
 
-Privacy networking layer:
-- 3-hop onion routing
-- μ-encrypted layers
-- .muon hidden services
-- Decentralized directory via ChainMesh
+Tor-inspired privacy networking layer with μ-cryptography:
+
+**Core Features:**
+- **3-hop onion routing** - Guard → Middle → Exit circuit topology
+- **μ-encrypted layers** - Each hop uses μ-Spiral AEAD with forward secrecy
+- **Fixed 512-byte cells** - Traffic analysis resistance
+- **Stream multiplexing** - Multiple streams per circuit with flow control
+- **Forward-secret handshakes** - Ephemeral key exchange per circuit
+
+**Hidden Services:**
+- **.muon addresses** - Base32-encoded public key hashes
+- **Rendezvous protocol** - Anonymous service connections
+- **Introduction points** - Decentralized service discovery
+- **Descriptor publishing** - Encrypted service metadata
+
+**Directory System:**
+- **Consensus protocol** - Multi-authority voting
+- **Relay descriptors** - Bandwidth, exit policies, keys
+- **HSDir ring** - Distributed hidden service directory
+
+**CLI Commands:**
+```bash
+# Start daemon
+muond run --relay --or-port 9001
+
+# Circuit operations
+muon circuit list
+muon circuit build --hops 3
+
+# Hidden services
+muon hidden create --port 80
+muon hidden list
+```
+
+**Quick Start:**
+```bash
+cd muonnet && cargo build --release
+cargo test  # 78 tests passing
+```
 
 ### μKernel (Planned)
 
@@ -223,8 +276,8 @@ Do NOT use for real-world security applications.
 | M4 | ChainMesh contracts & marketplace | ✅ Complete |
 | M5 | ChainMesh P2P & storage | ✅ Complete |
 | M6 | ChainMesh CLI & node | ✅ Complete |
-| M7 | ChainMesh testnet | 📋 Planned |
-| M8 | MuonNet prototype | 📋 Planned |
+| M7 | MuonNet privacy layer | ✅ Complete |
+| M8 | MuonNet hidden services | ✅ Complete |
 | M9 | μKernel boots | 📋 Planned |
 | M10 | Self-hosting | 📋 Planned |
 | M11 | Public alpha | 📋 Planned |

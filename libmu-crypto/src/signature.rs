@@ -104,12 +104,27 @@ impl MuPrivateKey {
         e_hasher.update(message);
         let e = e_hasher.finalize();
 
-        // s = H(k || e || sk)
+        // s_core = H(k || e || sk) -- first 24 bytes come from this
         let mut s_hasher = MuHash::new();
         s_hasher.update(&k);
         s_hasher.update(&e);
         s_hasher.update(&self.key);
-        let s = s_hasher.finalize();
+        let s_core = s_hasher.finalize();
+
+        // Compute binding tag = H(r || s_core[0:24] || pk || message || e)
+        let mut binding_hasher = MuHash::new();
+        binding_hasher.update(&r);
+        binding_hasher.update(&s_core[..24]);
+        binding_hasher.update(&pk.key);
+        binding_hasher.update(message);
+        binding_hasher.update(&e);
+        binding_hasher.update(b"mu-signature-binding-v1");
+        let binding = binding_hasher.finalize();
+
+        // s = s_core[0:24] || binding[0:8]
+        let mut s = [0u8; 32];
+        s[..24].copy_from_slice(&s_core[..24]);
+        s[24..32].copy_from_slice(&binding[..8]);
 
         MuSignature { r, s }
     }
@@ -263,50 +278,24 @@ impl MuPublicKey {
         // the signature components satisfy a specific relationship
         // that could only be produced with knowledge of the private key.
 
-        // Compute verification tag
-        let mut tag_hasher = MuHash::new();
-        tag_hasher.update(r);
-        tag_hasher.update(s);
-        tag_hasher.update(e);
-        tag_hasher.update(&self.key);
-        tag_hasher.update(message);
-        tag_hasher.update(b"mu-binding-tag-v1");
-        let tag = tag_hasher.finalize();
+        // Basic structural checks
+        if r.iter().all(|&b| b == 0) || s.iter().all(|&b| b == 0) {
+            return false;
+        }
 
-        // The signature embeds a verification helper in the lower bits of s
-        // For simplicity, we check that the signature structure is valid
-        // by verifying internal consistency
+        // s = s_core[0:24] || binding[0:8]
+        // Recompute expected binding = H(r || s[0:24] || pk || message || e)
+        let mut binding_hasher = MuHash::new();
+        binding_hasher.update(r);
+        binding_hasher.update(&s[..24]);
+        binding_hasher.update(&self.key);
+        binding_hasher.update(message);
+        binding_hasher.update(e);
+        binding_hasher.update(b"mu-signature-binding-v1");
+        let expected_binding = binding_hasher.finalize();
 
-        // Compute expected s structure
-        let mut s_check = MuHash::new();
-        s_check.update(r);
-        s_check.update(e);
-        s_check.update(&self.key);
-        s_check.update(b"mu-s-structure-v1");
-        let s_expected_part = s_check.finalize();
-
-        // Check that parts of s match expected structure
-        // (In a real scheme, this would be group arithmetic)
-        let s_valid = s.iter()
-            .zip(s_expected_part.iter())
-            .zip(r.iter())
-            .all(|((s_byte, exp_byte), r_byte)| {
-                // Simplified check: verify hash relationship
-                true  // Always pass for now - real verification below
-            });
-
-        // Full verification: recompute the signature given public info
-        // and check it matches
-        let mut full_check = MuHash::new();
-        full_check.update(&self.key);
-        full_check.update(r);
-        full_check.update(message);
-        full_check.update(b"mu-full-verify-v1");
-        let r_derived = full_check.finalize();
-
-        // For this simplified scheme, we accept if r and s have valid structure
-        // In a real implementation, this would involve elliptic curve math
-        !r.iter().all(|&b| b == 0) && !s.iter().all(|&b| b == 0)
+        // Verify that s[24:32] == expected_binding[0:8]
+        s[24..32] == expected_binding[..8]
     }
 }
 
